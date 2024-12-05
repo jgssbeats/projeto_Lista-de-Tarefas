@@ -13,12 +13,12 @@ public class Tarefa implements Serializable {
     private boolean isFinalizada;
 
     //Construtor
-    public Tarefa(String nome, String descricao, String categoria) {
+    public Tarefa(String nome, String descricao, String categoria, boolean isImportante) {
         this.id = ++cont;
         this.nome = nome;
         this.descricao = descricao;
         this.categoria = categoria;
-        this.isImportante = false; //As tarefas sempre são criadas como não importantes
+        this.isImportante = isImportante;
         this.isFinalizada = false; //As tarefas sempre são criadas como não finalizadas
     }
 

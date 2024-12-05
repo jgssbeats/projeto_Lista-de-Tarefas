@@ -38,5 +38,6 @@
       <Button fx:id="buttonPessoal" alignment="TOP_LEFT" layoutX="47.0" layoutY="191.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="216.0" style="-fx-background-color: #ebf1f5; -fx-background-radius: 5;" text="Pessoal" />
       <Text layoutX="59.0" layoutY="191.0" strokeType="OUTSIDE" strokeWidth="0.0" />
       <Line endX="125.0" layoutX="158.0" layoutY="166.0" startX="-132.0" stroke="#aba4a4" />
+      <VBox fx:id="VBoxListaDeTarefas" layoutX="341.0" layoutY="29.0" prefHeight="739.0" prefWidth="617.0" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="45.0" />
    </children>
 </AnchorPane>
