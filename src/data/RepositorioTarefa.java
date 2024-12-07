@@ -16,24 +16,38 @@ public class RepositorioTarefa  implements ITarefa {
 
     @Override
     public ArrayList<Tarefa> getAllTarefas() {
-        ArrayList<Tarefa> tarefas = new ArrayList<Tarefa>();
-        ObjectInputStream ois = null;
-        try(FileInputStream fis = new FileInputStream(arquivo)) { 
-            while (fis.available() > 0) {
-                ois = new ObjectInputStream (fis);
-                Tarefa t = (Tarefa)ois.readObject();
-                tarefas.add(t);
+        ArrayList<Tarefa> tarefas = new ArrayList<>();
+
+        try (FileInputStream fis = new FileInputStream(arquivo)) {
+            if (fis.available() > 0) {
+                ObjectInputStream ois = null;
+                try {
+                    while (fis.available() > 0) {
+                        ois = new ObjectInputStream(fis);
+                        Tarefa t = (Tarefa) ois.readObject();
+                        tarefas.add(t);
+                    }
+                } catch (ClassNotFoundException ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
-            ois.close();
         } catch (FileNotFoundException ex) {
-            System.out.println("Erro na leitura do arquivo " + ex.getMessage());
-        } catch (EOFException e){
-            System.out.println("Erro de fim de arquivo");
-        } catch (IOException | ClassNotFoundException ex) {
-            System.out.println ("Problema ao atualizar o arquivo");
+            // Arquivo não existe, cria vazio
+            try (FileOutputStream fos = new FileOutputStream(arquivo)) {
+                System.out.println("Arquivo criado vazio.");
+            } catch (IOException ioe) {
+                throw new RuntimeException("Erro ao criar arquivo vazio: " + ioe.getMessage());
+            }
+        } catch (EOFException e) {
+            // Arquivo está vazio, retorna lista vazia
+            System.out.println("Arquivo vazio. Nenhuma tarefa carregada.");
+        } catch (IOException ex) {
+            System.out.println("Problema ao carregar o arquivo: " + ex.getMessage());
         }
+
         return tarefas;
     }
+
 
     @Override
     public void criarTarefa(Tarefa tarefa) {
