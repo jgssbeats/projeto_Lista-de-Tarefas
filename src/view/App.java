@@ -1,4 +1,4 @@
-package vision;
+package view;
 
 import java.io.IOException;
 import javafx.application.Application;

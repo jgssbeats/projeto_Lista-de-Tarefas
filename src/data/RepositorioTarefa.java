@@ -49,11 +49,11 @@ public class RepositorioTarefa  implements ITarefa {
     }
 
     @Override
-    public Tarefa lerTarefa(int id) {
+    public Tarefa lerTarefa(String nome) {
         ArrayList <Tarefa> tarefas = getAllTarefas();
         Tarefa tarefa = null;
         for (Tarefa t: tarefas) {
-            if (t.getId() == id) {
+            if (t.getNome().equalsIgnoreCase(nome)) {
                 tarefa = t;
                 break;
             }

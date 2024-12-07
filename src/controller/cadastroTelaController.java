@@ -18,8 +18,9 @@ import model.Tarefa;
 
 public class cadastroTelaController implements Initializable {
 
-    private Stage dialogStage; // Variável para armazenar o estágio do diálogo
+    private Stage dialogStage; 
     private RepositorioTarefa repositorioTarefa = new RepositorioTarefa();
+    private Tarefa tarefaAtual; // Armazena a tarefa para edição, se for o caso
 
     @FXML
     private Button buttonCancelarTarefa;
@@ -63,12 +64,23 @@ public class cadastroTelaController implements Initializable {
     @FXML
     private Label labelStatusSalvarTarefa;
 
-    private String categoriaSelecionada = ""; // Armazena a categoria escolhida
+    private String categoriaSelecionada = "";
 
-
-    // Método para definir o estágio do diálogo
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
+    }
+
+    public void setTarefaAtual(Tarefa tarefa) {
+        this.tarefaAtual = tarefa;
+
+        // Preenche os campos com os dados da tarefa existente
+        if (tarefa != null) {
+            textFieldNomeTarefa.setText(tarefa.getNome());
+            textFieldDetalhes.setText(tarefa.getDescricao());
+            menuButtonEscolherCategoria.setText(tarefa.getCategoria());
+            checkBoxImportante.setSelected(tarefa.isImportante());
+            categoriaSelecionada = tarefa.getCategoria();
+        }
     }
 
     private void limparTextField(){
@@ -86,26 +98,35 @@ public class cadastroTelaController implements Initializable {
 
     @FXML
     void handleButtonSalvarTarefa(ActionEvent event) {
-        if (!textFieldNomeTarefa.getText().isEmpty()){
-            String nome = textFieldNomeTarefa.getText().toUpperCase();
-            String detalhes = textFieldDetalhes.getText().toUpperCase();
-            boolean importante = checkBoxImportante.isSelected(); // Captura o estado da CheckBox
-            repositorioTarefa.criarTarefa(new Tarefa (nome, detalhes, getCategoriaSelecionada(), importante));
-            this.dialogStage.close();
+        String nome = textFieldNomeTarefa.getText();
+        String detalhes = textFieldDetalhes.getText();
+
+        if (nome.isEmpty()) {
+            labelStatusSalvarTarefa.setText("O nome da tarefa é obrigatório.");
+            return;
         }
-        else{
-            labelStatusSalvarTarefa.setText("Você deve inserir um nome para a tarefa.");
-            textFieldNomeTarefa.requestFocus();
+
+        if (tarefaAtual == null) {
+            // Criação de nova tarefa
+            Tarefa novaTarefa = new Tarefa(nome, detalhes, categoriaSelecionada, checkBoxImportante.isSelected());
+            repositorioTarefa.criarTarefa(novaTarefa);
+        } else {
+            // Atualização de tarefa existente
+            tarefaAtual.setNome(nome);
+            tarefaAtual.setDescricao(detalhes);
+            tarefaAtual.setCategoria(categoriaSelecionada);
+            tarefaAtual.setImportante(checkBoxImportante.isSelected());
+            repositorioTarefa.atualizarTarefa(tarefaAtual);
         }
-    }
-    
-    // Outros métodos do controlador, como manipulação de eventos e lógica da tela
-    @FXML
-    void handleButtonCancelarTarefa(ActionEvent event) {
-        this.dialogStage.close();
+
+        dialogStage.close();
     }
 
-    // Configura o comportamento dos MenuItems
+    @FXML
+    void handleButtonCancelarTarefa(ActionEvent event) {
+        dialogStage.close();
+    }
+
     private void configurarMenuButton() {
         menuItemCasa.setOnAction(event -> selecionarCategoria(menuItemCasa.getText()));
         menuItemCompras.setOnAction(event -> selecionarCategoria(menuItemCompras.getText()));
@@ -116,15 +137,8 @@ public class cadastroTelaController implements Initializable {
         menuItemEstudos.setOnAction(event -> selecionarCategoria(menuItemEstudos.getText()));
     }
 
-    // Atualiza o texto do MenuButton e armazena a categoria selecionada
     private void selecionarCategoria(String categoria) {
         categoriaSelecionada = categoria;
-        menuButtonEscolherCategoria.setText(categoria); // Atualiza o texto do MenuButton
-    }
-
-    // Getter para obter a categoria selecionada
-    public String getCategoriaSelecionada() {
-        return categoriaSelecionada;
+        menuButtonEscolherCategoria.setText(categoria);
     }
 }
-
