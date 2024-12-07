@@ -1,4 +1,5 @@
 package data;
+
 import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,10 +45,8 @@ public class RepositorioTarefa  implements ITarefa {
         } catch (IOException ex) {
             System.out.println("Problema ao carregar o arquivo: " + ex.getMessage());
         }
-
         return tarefas;
     }
-
 
     @Override
     public void criarTarefa(Tarefa tarefa) {

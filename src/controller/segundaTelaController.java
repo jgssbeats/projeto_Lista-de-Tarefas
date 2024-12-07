@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -47,16 +48,67 @@ public class segundaTelaController implements Initializable {
 
     private String filtroAtual = ""; 
 
+    private ArrayList<Button> botoesCategoria = new ArrayList<>();
+
     private RepositorioTarefa repositorioTarefa = new RepositorioTarefa();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        textFieldBuscarTarefa.setOnKeyPressed(event -> {
+        if (event.getCode() == KeyCode.ENTER) {
+            handleButtonBuscarTarefa(new ActionEvent());
+            }
+        });
         limparTextField();
         carregarTarefas();
+        inicializarBotoes();
     }
 
     private void limparTextField(){
         textFieldBuscarTarefa.clear();
+    }
+    
+    // Carregar as tarefas salvas no repositório e gerar os containers estilizados
+    private void carregarTarefas() {
+        VBoxListaDeTarefas.getChildren().clear(); // Limpar a interface antes de atualizar
+        ArrayList<Tarefa> tarefas = repositorioTarefa.getAllTarefas();
+
+        if (tarefas == null || tarefas.isEmpty()) {
+            System.out.println("Nenhuma tarefa encontrada.");
+            return; // Não tenta carregar se a lista está vazia
+        }
+
+        // Adicionar tarefas não concluídas primeiro
+        tarefas.stream()
+            .filter(tarefa -> !tarefa.isFinalizada())
+            .forEach(tarefa -> VBoxListaDeTarefas.getChildren().add(criarContainerTarefa(tarefa)));
+    
+        // Adicionar tarefas concluídas depois
+        tarefas.stream()
+            .filter(Tarefa::isFinalizada)
+            .forEach(tarefa -> VBoxListaDeTarefas.getChildren().add(criarContainerTarefa(tarefa)));
+        
+    }
+
+    private void inicializarBotoes() {
+        botoesCategoria.add(buttonLazer);
+        botoesCategoria.add(buttonCasa);
+        botoesCategoria.add(buttonCompras);
+        botoesCategoria.add(buttonSaude);
+        botoesCategoria.add(buttonTrabalho);
+        botoesCategoria.add(buttonEstudos);
+        botoesCategoria.add(buttonPessoal);
+        botoesCategoria.add(buttonImportante);
+        botoesCategoria.add(buttonTarefasPendentes);
+        botoesCategoria.add(buttonTarefasRealizadas);
+    }
+
+    private void resetarEstiloBotoes() {
+        for (Button botao : botoesCategoria) {
+            botao.setStyle("-fx-background-color: #ebf1f5; -fx-background-radius: 5;"); // Cor padrão
+        }
+        // Estilo original do botão "Importante"
+        buttonImportante.setStyle("-fx-background-color: #2f5d75; -fx-background-radius: 5; -fx-text-fill: white;");
     }
 
     @FXML
@@ -86,59 +138,7 @@ public class segundaTelaController implements Initializable {
             }
         }
     }
-
-
-    @FXML
-    void handleButtonAdicionarTarefa(ActionEvent event) {
-        try {
-            // Corrigindo o caminho do FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cadastroTela.fxml"));
-            AnchorPane page = loader.load();
-            
-            // Cria o palco dialogStage.
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Cadastrar Tarefa");
-            dialogStage.initModality(Modality.APPLICATION_MODAL); // Impede interação com a janela principal enquanto essa estiver aberta.
-            Scene scene = new Scene(page);
-            dialogStage.setScene(scene);
-            
-            // Configura o controlador da nova tela.
-            cadastroTelaController controller = loader.getController();
-            controller.setDialogStage(dialogStage); // Define o estágio do diálogo para o controlador.
-            
-            // Exibe a nova tela.
-            dialogStage.showAndWait();
-
-            carregarTarefas();
-            
-        } catch (IOException ex) {
-            Logger.getLogger(segundaTelaController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    // Carregar as tarefas salvas no repositório e gerar os containers estilizados
-    private void carregarTarefas() {
-        VBoxListaDeTarefas.getChildren().clear(); // Limpar a interface antes de atualizar
-        ArrayList<Tarefa> tarefas = repositorioTarefa.getAllTarefas();
-
-        if (tarefas == null || tarefas.isEmpty()) {
-            System.out.println("Nenhuma tarefa encontrada.");
-            return; // Não tenta carregar se a lista está vazia
-        }
-
-        // Adicionar tarefas não concluídas primeiro
-        tarefas.stream()
-            .filter(tarefa -> !tarefa.isFinalizada())
-            .forEach(tarefa -> VBoxListaDeTarefas.getChildren().add(criarContainerTarefa(tarefa)));
     
-        // Adicionar tarefas concluídas depois
-        tarefas.stream()
-            .filter(Tarefa::isFinalizada)
-            .forEach(tarefa -> VBoxListaDeTarefas.getChildren().add(criarContainerTarefa(tarefa)));
-        
-    }
-    
-
     // Criar um container estilizado para exibir as tarefas
     private AnchorPane criarContainerTarefa(Tarefa tarefa) {
         AnchorPane container = new AnchorPane();
@@ -230,6 +230,103 @@ public class segundaTelaController implements Initializable {
         container.getChildren().addAll(titulo, descricao, categoria, checkConcluir, buttonRemover, buttonEditar);
         return container;
     }
+
+    @FXML
+    void handleButtonAdicionarTarefa(ActionEvent event) {
+        try {
+            // Corrigindo o caminho do FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cadastroTela.fxml"));
+            AnchorPane page = loader.load();
+            
+            // Cria o palco dialogStage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Cadastrar Tarefa");
+            dialogStage.initModality(Modality.APPLICATION_MODAL); // Impede interação com a janela principal enquanto essa estiver aberta.
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+            
+            // Configura o controlador da nova tela.
+            cadastroTelaController controller = loader.getController();
+            controller.setDialogStage(dialogStage); // Define o estágio do diálogo para o controlador.
+            
+            // Exibe a nova tela.
+            dialogStage.showAndWait();
+
+            carregarTarefas();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(segundaTelaController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @FXML
+    void handleButtonCategoria(ActionEvent event) {
+        String categoriaSelecionada = "";
+
+        if (event.getSource() == buttonLazer) {
+            categoriaSelecionada = "Lazer";
+        } else if (event.getSource() == buttonCasa) {
+            categoriaSelecionada = "Casa";
+        } else if (event.getSource() == buttonCompras) {
+            categoriaSelecionada = "Compras";
+        } else if (event.getSource() == buttonSaude) {
+            categoriaSelecionada = "Saúde";
+        } else if (event.getSource() == buttonTrabalho) {
+            categoriaSelecionada = "Trabalho";
+        } else if (event.getSource() == buttonEstudos) {
+            categoriaSelecionada = "Estudos";
+        } else if (event.getSource() == buttonPessoal) {
+            categoriaSelecionada = "Pessoal";
+        } else if (event.getSource() == buttonImportante) {
+            categoriaSelecionada = "Importante";
+        }
+
+        // Atualiza o filtro atual
+        if (filtroAtual.equals(categoriaSelecionada)) {
+            filtroAtual = ""; // Remove o filtro
+            resetarEstiloBotoes(); // Remove o destaque
+            carregarTarefas(); // Recarrega todas as tarefas
+        } else {
+            filtroAtual = categoriaSelecionada; // Aplica o novo filtro
+            resetarEstiloBotoes(); // Reseta estilos
+            if (event.getSource() == buttonImportante) {
+                ((Button) event.getSource()).setStyle("-fx-background-color: #00CED1; -fx-background-radius: 5; -fx-text-fill: white;"); // Cor especial para "Importante"
+            } else {
+                ((Button) event.getSource()).setStyle("-fx-background-color: #2f5d75; -fx-background-radius: 5; -fx-text-fill: white;"); // Destaque padrão
+            }
+            aplicarFiltroAtual(); // Aplica o filtro
+        }
+
+        handleButtonBuscarTarefa(null); // Atualiza a busca dentro do filtro
+    }
+    
+    @FXML
+    void handleButtonTarefasRealizadas(ActionEvent event) {
+        if (filtroAtual.equals("Realizadas")) {
+            filtroAtual = ""; // Remove o filtro
+            resetarEstiloBotoes();
+            carregarTarefas();
+        } else {
+            filtroAtual = "Realizadas"; // Aplica o filtro
+            resetarEstiloBotoes();
+            buttonTarefasRealizadas.setStyle("-fx-background-color: #2f5d75; -fx-background-radius: 5; -fx-text-fill: white;"); // Destaca o botão
+            aplicarFiltroAtual();
+        }
+    }
+
+    @FXML
+    void handleButtonTarefasNaoRealizadas(ActionEvent event) {
+        if (filtroAtual.equals("Pendentes")) {
+            filtroAtual = ""; // Remove o filtro
+            resetarEstiloBotoes();
+            carregarTarefas();
+        } else {
+            filtroAtual = "Pendentes"; // Aplica o filtro
+            resetarEstiloBotoes();
+            buttonTarefasPendentes.setStyle("-fx-background-color: #2f5d75; -fx-background-radius: 5; -fx-text-fill: white;"); // Destaca o botão
+            aplicarFiltroAtual();
+        }
+    }
     
     private void abrirTelaEdicao(Tarefa tarefa) {
         try {
@@ -256,7 +353,7 @@ public class segundaTelaController implements Initializable {
             ex.printStackTrace();
         }
     }
-    
+
     private void aplicarFiltroAtual() {
         VBoxListaDeTarefas.getChildren().clear(); // Limpa a lista de tarefas exibidas
         ArrayList<Tarefa> tarefas = repositorioTarefa.getAllTarefas();
@@ -269,61 +366,7 @@ public class segundaTelaController implements Initializable {
             (filtroAtual.equals(tarefa.getCategoria()))) { // Filtro por categoria
 
             VBoxListaDeTarefas.getChildren().add(criarContainerTarefa(tarefa));
+            }
         }
-        }
-    }    
-
-    @FXML
-    void handleButtonCategoria(ActionEvent event) {
-        String categoriaSelecionada = "";
-
-        if (event.getSource() == buttonLazer) {
-            categoriaSelecionada = "Lazer";
-        } else if (event.getSource() == buttonCasa) {
-            categoriaSelecionada = "Casa";
-        } else if (event.getSource() == buttonCompras) {
-            categoriaSelecionada = "Compras";
-        } else if (event.getSource() == buttonSaude) {
-            categoriaSelecionada = "Saúde";
-        } else if (event.getSource() == buttonTrabalho) {
-            categoriaSelecionada = "Trabalho";
-        } else if (event.getSource() == buttonEstudos) {
-            categoriaSelecionada = "Estudos";
-        } else if (event.getSource() == buttonPessoal) {
-            categoriaSelecionada = "Pessoal";
-        } else if (event.getSource() == buttonImportante) {
-            categoriaSelecionada = "Importante";
-        }
-
-        // Se o mesmo filtro for clicado novamente, limpa o filtro
-        if (filtroAtual.equals(categoriaSelecionada)) {
-            filtroAtual = ""; // Remove o filtro
-            carregarTarefas(); // Recarrega todas as tarefas
-        } else {
-            filtroAtual = categoriaSelecionada; // Aplica o novo filtro
-            aplicarFiltroAtual(); // Aplica o filtro
-        }
-
-        handleButtonBuscarTarefa(null); // Atualiza a busca dentro do filtro
-    }
-
-    @FXML
-    void handleButtonTarefasNaoRealizadas(ActionEvent event) { //Carrega somente as tarefas realizadas
-        if (filtroAtual.equals("Pendentes")) { // Se já está filtrando por pendentes, remove o filtro
-            filtroAtual = ""; // Remove o filtro
-        } else {
-            filtroAtual = "Pendentes"; // Aplica o filtro de pendentes
-        }
-        aplicarFiltroAtual(); // Reutiliza o método para atualizar a lista
-    }
-
-    @FXML
-    void handleButtonTarefasRealizadas(ActionEvent event) {// Carrega somente as tarefas realizadas
-        if (filtroAtual.equals("Realizadas")) { // Se já está filtrando por realizadas, remove o filtro
-            filtroAtual = ""; // Remove o filtro
-        } else {
-            filtroAtual = "Realizadas"; // Aplica o filtro de realizadas
-        }
-        aplicarFiltroAtual(); // Reutiliza o método para atualizar a lista
     }
 }

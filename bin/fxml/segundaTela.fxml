@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.layout.*?>
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" style="-fx-background-color: #9EA8AE;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.segundaTelaController">
    <children>
@@ -23,7 +21,7 @@
                   <Font size="16.0" />
                </font>
             </TextField>
-            <Button fx:id="buttonBuscarTarefa" layoutX="240.0" layoutY="53.0" mnemonicParsing="false" onAction="#handleButtonBuscarTarefa" prefHeight="37.0" prefWidth="41.0" style="-fx-background-color: #2f5d75; -fx-background-radius: 20;" text="🔎 " textFill="WHITE" />
+            <Button fx:id="buttonBuscarTarefa" layoutX="240.0" layoutY="53.0" mnemonicParsing="false" onAction="#handleButtonBuscarTarefa" prefHeight="37.0" prefWidth="41.0" style="-fx-background-color: #2f5d75; -fx-background-radius: 20;" text="🔎" textFill="WHITE" />
          </children>
       </AnchorPane>
       <Button fx:id="buttonTarefasPendentes" alignment="TOP_LEFT" layoutX="47.0" layoutY="648.0" mnemonicParsing="false" onAction="#handleButtonTarefasNaoRealizadas" prefHeight="31.0" prefWidth="216.0" style="-fx-background-color: ebf1f5; -fx-background-radius: 5;" text="Tarefas não realizadas" />
@@ -39,6 +37,8 @@
       <Button fx:id="buttonPessoal" alignment="TOP_LEFT" layoutX="47.0" layoutY="191.0" mnemonicParsing="false" onAction="#handleButtonCategoria" prefHeight="31.0" prefWidth="216.0" style="-fx-background-color: #ebf1f5; -fx-background-radius: 5;" text="Pessoal" />
       <Text layoutX="59.0" layoutY="191.0" strokeType="OUTSIDE" strokeWidth="0.0" />
       <Line endX="125.0" layoutX="158.0" layoutY="166.0" startX="-132.0" stroke="#aba4a4" />
-      <VBox fx:id="VBoxListaDeTarefas" layoutX="300.0" prefHeight="800.0" prefWidth="700.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0" />
+      <ScrollPane layoutX="300.0" prefHeight="800.0" prefWidth="700.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <VBox fx:id="VBoxListaDeTarefas" prefWidth="680.0" />
+      </ScrollPane>
    </children>
 </AnchorPane>

@@ -2,7 +2,6 @@ package controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import data.RepositorioTarefa;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,61 +12,60 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import model.Tarefa;
 
 public class cadastroTelaController implements Initializable {
 
-    private Stage dialogStage; 
-    private RepositorioTarefa repositorioTarefa = new RepositorioTarefa();
-    private Tarefa tarefaAtual; // Armazena a tarefa para edição, se for o caso
+    @FXML
+    private Button buttonSalvarTarefa, buttonCancelarTarefa;
 
     @FXML
-    private Button buttonCancelarTarefa;
+    private TextField textFieldNomeTarefa, textFieldDetalhes;
 
     @FXML
-    private TextField textFieldNomeTarefa;
-
-    @FXML
-    private MenuItem menuItemSaude;
-
-    @FXML
-    private MenuItem menuItemTrabalho;
-
-    @FXML
-    private TextField textFieldDetalhes;
-
-    @FXML
-    private MenuItem menuItemLazer;
-
-    @FXML
-    private CheckBox checkBoxImportante;
-
-    @FXML
-    private MenuItem menuItemEstudos;
-
-    @FXML
-    private MenuItem menuItemCompras;
-
-    @FXML
-    private MenuItem menuItemCasa;
-
-    @FXML
-    private MenuItem menuItemPessoal;
+    private MenuItem menuItemSaude, menuItemTrabalho, menuItemLazer, menuItemEstudos,
+                     menuItemCompras, menuItemCasa, menuItemPessoal;
 
     @FXML
     private MenuButton menuButtonEscolherCategoria;
-
+    
     @FXML
-    private Button buttonSalvarTarefa;
+    private CheckBox checkBoxImportante;
 
     @FXML
     private Label labelStatusSalvarTarefa;
 
     private String categoriaSelecionada = "";
+    
+    private Stage dialogStage; 
+    
+    private Tarefa tarefaAtual; // Armazena a tarefa para edição, se for o caso
+    
+    private RepositorioTarefa repositorioTarefa = new RepositorioTarefa();
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        limparTextField();
+        configurarMenuButton();
+    }
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
+
+        dialogStage.getScene().setOnKeyPressed(event -> {
+        if (event.getCode() == KeyCode.ENTER) {
+            handleButtonSalvarTarefa(new ActionEvent());
+        }
+        });
+    }
+    
+    private void limparTextField(){
+        textFieldNomeTarefa.clear();
+        textFieldDetalhes.clear();
+        labelStatusSalvarTarefa.setText("");
+        textFieldNomeTarefa.requestFocus();
     }
 
     public void setTarefaAtual(Tarefa tarefa) {
@@ -83,17 +81,9 @@ public class cadastroTelaController implements Initializable {
         }
     }
 
-    private void limparTextField(){
-        textFieldNomeTarefa.clear();
-        textFieldDetalhes.clear();
-        labelStatusSalvarTarefa.setText("");
-        textFieldNomeTarefa.requestFocus();
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        limparTextField();
-        configurarMenuButton();
+    private void selecionarCategoria(String categoria) {
+        categoriaSelecionada = categoria;
+        menuButtonEscolherCategoria.setText(categoria);
     }
 
     @FXML
@@ -105,7 +95,6 @@ public class cadastroTelaController implements Initializable {
             labelStatusSalvarTarefa.setText("O nome da tarefa é obrigatório.");
             return;
         }
-
         if (tarefaAtual == null) {
             // Criação de nova tarefa
             Tarefa novaTarefa = new Tarefa(nome, detalhes, categoriaSelecionada, checkBoxImportante.isSelected());
@@ -118,7 +107,6 @@ public class cadastroTelaController implements Initializable {
             tarefaAtual.setImportante(checkBoxImportante.isSelected());
             repositorioTarefa.atualizarTarefa(tarefaAtual);
         }
-
         dialogStage.close();
     }
 
@@ -135,10 +123,5 @@ public class cadastroTelaController implements Initializable {
         menuItemSaude.setOnAction(event -> selecionarCategoria(menuItemSaude.getText()));
         menuItemTrabalho.setOnAction(event -> selecionarCategoria(menuItemTrabalho.getText()));
         menuItemEstudos.setOnAction(event -> selecionarCategoria(menuItemEstudos.getText()));
-    }
-
-    private void selecionarCategoria(String categoria) {
-        categoriaSelecionada = categoria;
-        menuButtonEscolherCategoria.setText(categoria);
     }
 }
