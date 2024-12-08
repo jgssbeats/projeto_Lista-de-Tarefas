@@ -1,11 +1,15 @@
 package controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -144,30 +148,32 @@ public class segundaTelaController implements Initializable {
         AnchorPane container = new AnchorPane();
         container.setStyle("-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 16; -fx-background-radius: 16;");
         container.setPrefHeight(110); // Altura inicial
-    
+
         // Título
-        Text titulo = null;
         if (tarefa.isImportante()) {
             Text estrela = new Text("★");
             estrela.setStyle("-fx-font-size: 20px; -fx-fill: #FFA500;");
             AnchorPane.setTopAnchor(estrela, 5.0);
             AnchorPane.setLeftAnchor(estrela, 70.0);
             container.getChildren().add(estrela);
-    
-            titulo = new Text(tarefa.getNome());
-            titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-            AnchorPane.setTopAnchor(titulo, 5.0);
-            AnchorPane.setLeftAnchor(titulo, 97.0);
-        } else {
-            titulo = new Text(tarefa.getNome());
-            titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-            AnchorPane.setTopAnchor(titulo, 5.0);
-            AnchorPane.setLeftAnchor(titulo, 70.0);
         }
+        Text titulo = new Text(tarefa.getNome());
+        titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        titulo.setWrappingWidth(370); // Define a largura máxima para o texto
+        AnchorPane.setTopAnchor(titulo, 5.0);
+        AnchorPane.setLeftAnchor(titulo, tarefa.isImportante() ? 97.0 : 70.0);
+
+        // Listener para ajustar a altura do container com base no tamanho do texto do título
+        titulo.textProperty().addListener((observable, oldValue, newValue) -> {
+            double alturaTexto = titulo.getBoundsInLocal().getHeight();
+            if (alturaTexto + 40 > container.getPrefHeight()) { // 40 é a margem inicial
+                container.setPrefHeight(alturaTexto + 70); // Ajusta a altura dinamicamente
+            }
+        });
     
         // Descrição
         Text descricao = new Text("Descrição: " + tarefa.getDescricao());
-        descricao.setWrappingWidth(300); // Define a largura máxima para o texto
+        descricao.setWrappingWidth(360); // Define a largura máxima para o texto
         AnchorPane.setTopAnchor(descricao, 70.0);
         AnchorPane.setLeftAnchor(descricao, 70.0);
     
@@ -191,10 +197,29 @@ public class segundaTelaController implements Initializable {
         AnchorPane.setLeftAnchor(checkConcluir, 10.0);
     
         checkConcluir.setOnAction(event -> {
-            tarefa.setFinalizada(checkConcluir.isSelected());
-            repositorioTarefa.atualizarTarefa(tarefa);
-            carregarTarefas();
-        });
+        if(checkConcluir.isSelected()){
+            try {
+                // Corrigir o caminho do recurso
+                URL audioPath = getClass().getResource("/icons/task_check.wav");
+                if (audioPath == null) {
+                    throw new FileNotFoundException("Arquivo de áudio não encontrado: /icons/task_check.wav");
+                }
+        
+                // Abrir o áudio diretamente a partir do recurso
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioPath);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioStream);
+                clip.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } 
+        }
+        // Atualizar tarefa
+        tarefa.setFinalizada(checkConcluir.isSelected());
+        repositorioTarefa.atualizarTarefa(tarefa);
+        carregarTarefas();
+    });
+
     
         // Botão para remover tarefa
         Button buttonRemover = new Button("Remover");
@@ -204,6 +229,21 @@ public class segundaTelaController implements Initializable {
     
         buttonRemover.setOnAction(event -> {
         // Mostrar diálogo de confirmação
+        try {
+            // Corrigir o caminho do recurso
+            URL audioPath = getClass().getResource("/icons/remove.wav");
+            if (audioPath == null) {
+                throw new FileNotFoundException("Arquivo de áudio não encontrado: /icons/task_check.wav");
+            }
+    
+            // Abrir o áudio diretamente a partir do recurso
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioPath);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmação de Remoção");
             alert.setHeaderText("Deseja realmente remover esta tarefa?");
@@ -224,7 +264,22 @@ public class segundaTelaController implements Initializable {
         AnchorPane.setBottomAnchor(buttonEditar, 10.0);
         AnchorPane.setRightAnchor(buttonEditar, 10.0);
     
-        buttonEditar.setOnAction(event -> abrirTelaEdicao(tarefa));
+        buttonEditar.setOnAction(event -> {
+            try {
+                URL audioPath = getClass().getResource("/icons/click.wav");
+                if (audioPath == null) {
+                    throw new FileNotFoundException("Arquivo de áudio não encontrado: /icons/task_check.wav");
+                }
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioPath);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioStream);
+                clip.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            abrirTelaEdicao(tarefa);
+        });
+
     
         // Adiciona elementos ao container
         container.getChildren().addAll(titulo, descricao, categoria, checkConcluir, buttonRemover, buttonEditar);
@@ -233,6 +288,18 @@ public class segundaTelaController implements Initializable {
 
     @FXML
     void handleButtonAdicionarTarefa(ActionEvent event) {
+        try {
+            URL audioPath = getClass().getResource("/icons/click.wav");
+            if (audioPath == null) {
+                throw new FileNotFoundException("Arquivo de áudio não encontrado: /icons/task_check.wav");
+            }
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioPath);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             // Corrigindo o caminho do FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/cadastroTela.fxml"));

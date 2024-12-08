@@ -10,7 +10,7 @@
    <children>
       <ImageView fitHeight="800.0" fitWidth="1044.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../../Java%20Projects/ToCerto/src/icons/telaInicial_icon.jpg" />
+            <Image url="@/icons/telaInicial_icon.jpg" />
          </image>
       </ImageView>
       <Button fx:id="buttonComecar" layoutX="345.0" layoutY="672.0" mnemonicParsing="false" onAction="#handleButtonComecar" style="-fx-background-radius: 15;" text="CLIQUE PARA COMEÇAR" textAlignment="CENTER" textFill="#1f3a57">
